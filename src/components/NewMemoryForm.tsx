@@ -1,17 +1,15 @@
 'use client'
 
-import { cookies } from 'next/headers'
 import { FormEvent } from 'react'
 import { Camera } from 'lucide-react'
 import Cookie from 'js-cookie'
 
 import { api } from '@/lib/api'
 import { MediaPicker } from '@/components/MediaPicker'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export function NewMemoryForm() {
   const router = useRouter()
-  const cookiesValue = cookies()
 
   async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

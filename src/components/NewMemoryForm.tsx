@@ -1,17 +1,32 @@
 'use client'
 
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 import { Camera } from 'lucide-react'
 import Cookie from 'js-cookie'
 
 import { api } from '@/lib/api'
 import { MediaPicker } from '@/components/MediaPicker'
 import { useRouter } from 'next/navigation'
+import { DatePickerComponent } from './DatePicker'
+import dayjs from 'dayjs'
 
-export function NewMemoryForm() {
+interface NewMemoryFormProps {
+  memoryId?: string
+  memoryContent?: string
+  memoryCoverUrl?: string
+  memoryIsPublic?: boolean
+}
+
+export function NewMemoryForm({
+  memoryContent,
+  memoryCoverUrl,
+  memoryId,
+  memoryIsPublic
+}: NewMemoryFormProps) {
   const router = useRouter()
+  const [memoryDate, setMemoryDate] = useState(new Date())
 
-  async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
+  async function handleEditMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
@@ -29,10 +44,14 @@ export function NewMemoryForm() {
       coverUrl = uploadResponse.data.fileUrl
     }
 
+    if (memoryCoverUrl && !fileToUpload) {
+      coverUrl = memoryCoverUrl
+    }
+
     const token = Cookie.get('token')
 
-    await api.post(
-      '/memories',
+    await api.put(
+      `/memories/${memoryId}`,
       {
         coverUrl,
         content: formData.get('content'),
@@ -48,8 +67,11 @@ export function NewMemoryForm() {
     router.push('/')
   }
 
+  // validar a data e mandar para o back
+  // console.log(dayjs('Mon May 15 2023 21:32:09').format(''))
+
   return (
-    <form onSubmit={handleCreateMemory} className="flex flex-1 flex-col ga-2">
+    <form onSubmit={handleEditMemory} className="flex flex-1 flex-col gap-2">
       <div className="flex items-center gap-4">
         <label
           htmlFor="media"
@@ -66,18 +88,24 @@ export function NewMemoryForm() {
           <input
             type="checkbox"
             name="isPublic"
+            defaultChecked={memoryIsPublic}
             id="isPublic"
             value="true"
             className="h-4 w-4 rounded border-gray-400 bg-gray-700 text-purple-500"
           />
+          Tornar memória pública
         </label>
+
+        <DatePickerComponent dateValue={memoryDate} onSetDate={setMemoryDate} />
       </div>
 
-      <MediaPicker />
+      <MediaPicker previewValue={memoryCoverUrl} />
 
       <textarea
         name="content"
         spellCheck={false}
+        defaultValue={memoryContent}
+        // onChange={(e) => setNewContent(e.currentTarget.value)}
         className="flex-1 resize-none rounded border-0 bg-transparent p-0 text-lg leading-relaxed text-gray-100 placeholder:text-gray-400 focus:ring-0"
         placeholder="Fique livre para adicionar fotos, vídeos e relatos sobre essa experiência que você quer lembrar para sempre."
       />

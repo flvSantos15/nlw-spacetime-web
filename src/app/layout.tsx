@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { cookies } from 'next/headers'
 
 import './globals.css'
+import './date-picker.css'
 
 import {
   Roboto_Flex as Roboto,
@@ -51,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
 
           {/* Right */}
-          <div className="flex flex-col max-h-screen overflow-y-scroll bg-[url(../assets/bg-stars.svg)] bg-cover">
+          <div className="flex flex-col max-h-screen overflow-y-auto bg-[url(../assets/bg-stars.svg)] bg-cover">
             {children}
           </div>
         </main>
